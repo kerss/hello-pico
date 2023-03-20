@@ -1,32 +1,60 @@
-from machine import Pin, I2C
-from lib.ssd1306 import SSD1306_I2C
+from machine import Pin, ADC
 import time
 
-# Opzetten I2C protocol op pinnen
-oled_i2c = I2C(0, sda=Pin(8), scl=Pin(9))
 
-# Check of via i2c een chip te vinden is
-print(oled_i2c.scan())
+# Initialiseren van sensoren, knoppen en belangrijke parameters
+f_samping = 1
+thermometer_internal = ADC(4)
+button = Pin(16, Pin.IN)
 
-# I2C configureren voor ssd1306 display
-oled = SSD1306_I2C(width=128, height=32, i2c=oled_i2c, addr=0x3D)
+# Aanmaken van lege lijsten voor opslag
+tijdstippen = []
+temperatuur_metingen = [] 
 
-# Print iets op het scherm
-oled.fill(0)
-oled.text('Hello', 0, 0, 0xffff)
-oled.text('MicroPython!', 0, 10, 0xffff)
-oled.hline(0, 20, 95, 0xffff)
-oled.show()
+# Knop, om meting te starten (indrukken en loslaten)
+print('Druk button in om experiment te starten')
+while button.value() == False:
+    # zolang knop niet ingedrukt is
+    # Doe niets
+    pass
+while button.value() == True:
+    # zolang knop niet losgelaten is
+    # Doe niets
+    pass
 
-time.sleep(2.)
-
-teller = 0
+# Acquisitie start
+# Tijdstip 0 bepalen
+tijdstip0 = time.ticks_ms()
 
 while True:
-    oled.fill(0)
-    oled.text('Test program', 0, 0, 0xffff)
-    oled.text(f'Teller = {teller}', 0, 10, 0xffff)
-    oled.show()
+    # Tijdstip meting bepalen
+    huidige_tijd = (time.ticks_ms() - tijdstip0) / 1000
 
-    time.sleep(.5)
+    # Meting uitvoeren
+    adc_voltage = thermometer_internal.read_u16() * (3.3 / (65535))
+    temperature_celcius = 27 - (adc_voltage - 0.706) / 0.001721
 
+    # Meting laten zien, en eventueel opslaan
+    # Dit kan ook op een lcd of oled
+    print(huidige_tijd, adc_voltage, temperature_celcius)
+
+    # Opslaan in lijst (tijdelijke opslag)
+    tijdstippen.append(huidige_tijd)
+    temperatuur_metingen.append(temperature_celcius)
+    
+    # Als knop ingedrukt, stop meting
+    if button.value() == True:
+        print('button ingedrukt')
+        break
+
+    # Wacht tot volgende meting
+    time.sleep(1/f_samping)
+
+print('data acquisitie afgelopen')
+
+# Opslaan in bestand
+with open("data_01.txt", 'w') as out:
+    for tijdstip, meting in zip(tijdstippen, temperatuur_metingen):
+        out.write(f'{tijdstip}, {meting}\n')
+
+# Eind
