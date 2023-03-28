@@ -94,7 +94,8 @@ class MPU6500:
         self.address = address
 
         # 0x70 = standalone MPU6500, 0x71 = MPU6250 SIP
-        if self.whoami not in [0x71, 0x70]:
+        if self.whoami not in [0x71, 0x70, 0x73]:
+            print(f'Who am i check: {self.whoami}')
             raise RuntimeError("MPU6500 not found in I2C bus.")
 
         self._accel_so = self._accel_fs(accel_fs)

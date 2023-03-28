@@ -22,6 +22,23 @@
 
 """
 MicroPython I2C driver for MPU9250 9-axis motion tracking device
+Example code:
+
+    from machine import I2C, Pin
+    from lib.mpu9250 import MPU9250
+    import time
+
+    i2c = I2C(0, sda=Pin(0), scl=Pin(1))
+    mpu_9265 = MPU9250(i2c=i2c)
+
+    while True:
+        print(mpu_9265.acceleration)
+        print(mpu_9265.gyro)
+        print(mpu_9265.magnetic)
+        print(mpu_9265.temperature)
+
+        time.sleep(.5)
+
 """
 
 # pylint: disable=import-error
