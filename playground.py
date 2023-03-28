@@ -1,11 +1,12 @@
 from machine import Pin, ADC
+from extras import Button
 import time
 
 
 # Initialiseren van sensoren, knoppen en belangrijke parameters
 f_samping = 1
 thermometer_internal = ADC(4)
-button = Pin(16, Pin.IN)
+button = Button(Pin(16, Pin.IN))
 
 # Aanmaken van lege lijsten voor opslag
 tijdstippen = []
@@ -13,14 +14,7 @@ temperatuur_metingen = []
 
 # Knop, om meting te starten (indrukken en loslaten)
 print('Druk button in om experiment te starten')
-while button.value() == False:
-    # zolang knop niet ingedrukt is
-    # Doe niets
-    pass
-while button.value() == True:
-    # zolang knop niet losgelaten is
-    # Doe niets
-    pass
+button.wacht_op_knop_ingedrukt_en_los()
 
 # Acquisitie start
 # Tijdstip 0 bepalen
@@ -43,7 +37,7 @@ while True:
     temperatuur_metingen.append(temperature_celcius)
     
     # Als knop ingedrukt, stop meting
-    if button.value() == True:
+    if button.is_ingedrukt():
         print('button ingedrukt')
         break
 
