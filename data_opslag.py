@@ -1,8 +1,5 @@
 bestandsnaam = "voorbeeld_csv.txt"
 
-meetwaarde1 = 52340.231
-meetwaarde2 = 2
-
 # 'w' = write (schrijven nieuw bestand)
 with open(bestandsnaam, 'w') as file:
     regel_tekst = 'tijd, temperatuur, luchtvochtigheid\n'
